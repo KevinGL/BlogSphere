@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des articles{% endblock %}
+
+{% block body %}
+
+<div>
+    {% for article in articles %}
+        <h3>{{ article.title }}</h3>
+        <a href="{{ url('article_view', {'id': article.id}) }}">Voir</a>
+        <a href="{{ url('article_edit', {'id': article.id}) }}">Modifier</a>
+        <a href="{{ url('article_delete', {'id': article.id}) }}">Supprimer</a>
+        <div>Publié le {{ article.publishedAt | date("d F Y à H:i") }}</div>
+    {% endfor %}
+</div>
+
+{% endblock %}
