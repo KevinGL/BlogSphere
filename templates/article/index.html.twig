@@ -9,9 +9,42 @@
         <h3>{{ article.title }}</h3>
         <a href="{{ url('article_view', {'id': article.id}) }}">Voir</a>
         <a href="{{ url('article_edit', {'id': article.id}) }}">Modifier</a>
-        <a href="{{ url('article_delete', {'id': article.id}) }}">Supprimer</a>
+        {#<a href="{{ url('article_delete', {'id': article.id}) }}">Supprimer</a>#}
+        <button class="delete" id="{{article.id}}">Supprimer</button>
         <div>Publié le {{ article.publishedAt | date("d F Y à H:i") }}</div>
     {% endfor %}
 </div>
+
+<div id="modal" hidden>
+    Voulez-vous supprimer cet article ?
+    <button id="delete_yes">Oui</button>
+    <button id="delete_no">Non</button>
+</div>
+
+<script>
+
+const buttons = document.getElementsByClassName("delete");
+let idDelete;
+
+Array.from(buttons).map((button) =>
+{
+    button.addEventListener("click", () =>
+    {
+        document.getElementById("modal").hidden = false;
+        idDelete = button.id;
+    });
+});
+
+document.getElementById("delete_yes").addEventListener("click", () =>
+{
+    window.location.href = "/articles/delete/" + idDelete;
+});
+
+document.getElementById("delete_no").addEventListener("click", () =>
+{
+    document.getElementById("modal").hidden = true;
+});
+
+</script>
 
 {% endblock %}
