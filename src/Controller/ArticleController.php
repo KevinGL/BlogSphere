@@ -98,4 +98,15 @@ final class ArticleController extends AbstractController
 
         return $this->redirectToRoute("articles");
     }
+
+    #[Route("/my_articles", name:"my_articles")]
+    public function myArticles(ArticleRepository $repo): Response
+    {
+        $articles = $repo->findMyArticles($this->getUser());
+
+        return $this->render("article/my_articles.html.twig",
+        [
+            "articles" => $articles
+        ]);
+    }
 }
