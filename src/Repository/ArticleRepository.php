@@ -42,7 +42,7 @@ class ArticleRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findMyArticles(User $user): Array
+    public function findByUser(User $user): Array
     {
         return $this->createQueryBuilder("a")
             ->where("a.user = :user")

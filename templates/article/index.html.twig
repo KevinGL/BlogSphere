@@ -4,6 +4,14 @@
 
 {% block body %}
 
+<select id="filter_users">
+    <option value="default">Filtrer par utilisateur</option>
+    <option value="">Tous</option>
+    {% for user in users %}
+        <option value="{{ user.username }}">{{ user.username }}</option>
+    {% endfor %}
+</select>
+
 <div>
     {% for article in articles %}
         <h3>{{ article.title }}</h3>
@@ -44,6 +52,22 @@ document.getElementById("delete_yes").addEventListener("click", () =>
 document.getElementById("delete_no").addEventListener("click", () =>
 {
     document.getElementById("modal").hidden = true;
+});
+
+///////////////////////////////////////////
+
+const selectUsers = document.getElementById("filter_users");
+
+selectUsers.addEventListener("change", (e) =>
+{
+    if(e.target.value != "")
+    {
+        window.location.href = "/articles?user=" + e.target.value;
+    }
+    else
+    {
+        window.location.href = "{{ url('articles') }}";
+    }
 });
 
 </script>

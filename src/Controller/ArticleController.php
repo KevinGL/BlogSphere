@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,13 +17,25 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class ArticleController extends AbstractController
 {
     #[Route('/articles', name: 'articles')]
-    public function index(ArticleRepository $repo): Response
+    public function index(Request $req, ArticleRepository $repo, UserRepository $userRepo): Response
     {
-        $articles = $repo->findAll();
+        $articles = [];
+
+        if(!$req->query->get("user"))
+        {
+            $articles = $repo->findAll();
+        }
+        else
+        {
+            $articles = $repo->findByUser($userRepo->findBy(["username" => $req->query->get("user") ])[0]);
+        }
+
+        $users = $userRepo->findAll();
         
         return $this->render('article/index.html.twig',
         [
-            'articles' => $articles
+            'articles' => $articles,
+            'users' => $users
         ]);
     }
 
@@ -106,7 +119,7 @@ final class ArticleController extends AbstractController
     #[Route("/my_articles", name:"my_articles")]
     public function myArticles(ArticleRepository $repo): Response
     {
-        $articles = $repo->findMyArticles($this->getUser());
+        $articles = $repo->findByUser($this->getUser());
 
         return $this->render("article/my_articles.html.twig",
         [
