@@ -13,6 +13,12 @@
     <br>
     <br>
     <div>Publié le {{ article.publishedAt | date("d F Y à H:i") }} par {{ article.user.username }}</div>
+    <div>
+        Catégories :
+        {% for cat in article.categories %}
+            {{ cat.name }}
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

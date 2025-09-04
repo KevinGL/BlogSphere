@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des articles{% endblock %}
+
+{% block body %}
+
+<div>
+    {% for cat in cats %}
+        <h3>{{ cat.name }}</h3>
+        <a href="{{ url('cat_edit', {'id': cat.id}) }}">Modifier</a>
+        <button class="delete" id="{{cat.id}}">Supprimer</button>
+    {% endfor %}
+</div>
+
+<div id="modal" hidden>
+    Voulez-vous supprimer cette catégorie ?
+    <button id="delete_yes">Oui</button>
+    <button id="delete_no">Non</button>
+</div>
+
+<script>
+
+const buttons = document.getElementsByClassName("delete");
+let idDelete;
+
+Array.from(buttons).map((button) =>
+{
+    button.addEventListener("click", () =>
+    {
+        document.getElementById("modal").hidden = false;
+        idDelete = button.id;
+    });
+});
+
+document.getElementById("delete_yes").addEventListener("click", () =>
+{
+    window.location.href = "/categories/delete/" + idDelete;
+});
+
+document.getElementById("delete_no").addEventListener("click", () =>
+{
+    document.getElementById("modal").hidden = true;
+});
+
+</script>
+
+{% endblock %}

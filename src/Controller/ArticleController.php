@@ -10,7 +10,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted("ROLE_USER")]
 final class ArticleController extends AbstractController
 {
     #[Route('/articles', name: 'articles')]
@@ -54,7 +56,7 @@ final class ArticleController extends AbstractController
     #[Route('/articles/view/{id}', name: 'article_view')]
     public function view(ArticleRepository $repo, int $id): Response
     {
-        $article = $repo->findById($id);
+        $article = $repo->find($id);
         
         return $this->render('article/view.html.twig',
         [
@@ -65,7 +67,9 @@ final class ArticleController extends AbstractController
     #[Route("/articles/edit/{id}", name: "article_edit")]
     public function edit(Request $req, EntityManagerInterface $em, ArticleRepository $repo, int $id): Response
     {
-        $article = $repo->findById($id);
+        $article = $repo->find($id);
+
+        //dd($article->getCategories());
 
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($req);
@@ -89,7 +93,7 @@ final class ArticleController extends AbstractController
     #[Route("/articles/delete/{id}", name: "article_delete")]
     public function delete(EntityManagerInterface $em, ArticleRepository $repo, int $id): Response
     {
-        $article = $repo->findById($id);
+        $article = $repo->find($id);
 
         $em->remove($article);
         $em->flush();

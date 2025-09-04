@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Article;
+use App\Entity\Category;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -59,17 +60,38 @@ class AppFixtures extends Fixture
 
         ////////////////////////////////////////////////////////////////
 
+        $categories = [];
+        
+        for($i = 0 ; $i < 10 ; $i++)
+        {
+            $category = new Category();
+            $category->setName($this->faker->word());
+
+            $manager->persist($category);
+
+            array_push($categories, $category);
+        }
+
+        ////////////////////////////////////////////////////////////////
+
         for($i = 0 ; $i < 50 ; $i++)
         {
             $article = new Article();
 
             $article->setTitle($this->faker->title());
             $article->setContent(implode("\n", $this->faker->paragraphs(5)));
-            $article->setSlug($this->faker->url());
             $article->setImage($this->faker->imageUrl());
             $article->setStatus("published");
             $article->setPublishedAt($this->faker->dateTimeBetween("-1 month", "now"));
             $article->setUser($users[rand() % count($users)]);
+
+            $nbCat = rand() % 2 + 3;
+
+            for($j = 0 ; $j < $nbCat ; $j++)
+            {
+                $cat = $categories[rand() % count($categories)];
+                $article->addCategory($cat);
+            }
             
             $manager->persist($article);
         }

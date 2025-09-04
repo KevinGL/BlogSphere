@@ -42,15 +42,6 @@ class ArticleRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findById(int $id): Article
-    {
-        return $this->createQueryBuilder("a")
-            ->where("a.id = :id")
-            ->setParameter(":id", $id)
-            ->getQuery()
-            ->getSingleResult();
-    }
-
     public function findMyArticles(User $user): Array
     {
         return $this->createQueryBuilder("a")
