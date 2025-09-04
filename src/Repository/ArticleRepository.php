@@ -50,4 +50,14 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findByCats(Array $cats): Array
+    {
+        return $this->createQueryBuilder('a')
+        ->innerJoin('a.categories', 'c')
+        ->andWhere('c.id IN (:cats)')
+        ->setParameter('cats', $cats)
+        ->getQuery()
+        ->getResult();
+    }
 }

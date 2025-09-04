@@ -12,6 +12,14 @@
     {% endfor %}
 </select>
 
+<select id="filter_cat", multiple="multiple">
+    {% for cat in cats %}
+        <option value="{{ cat.name }}">{{ cat.name }}</option>
+    {% endfor %}
+</select>
+
+<button id="valid_filter_cat">Valider</button>
+
 <div>
     {% for article in articles %}
         <h3>{{ article.title }}</h3>
@@ -64,6 +72,41 @@ selectUsers.addEventListener("change", (e) =>
     {
         window.location.href = "/articles?user=" + e.target.value;
     }
+    else
+    {
+        window.location.href = "{{ url('articles') }}";
+    }
+});
+
+///////////////////////////////////////////
+
+let params = "";
+
+document.getElementById("filter_cat").addEventListener("change", (e) =>
+{
+    const selectedValues = Array.from(e.target.selectedOptions).map(option => option.value);
+
+    if(selectedValues.length !== 0)
+    {
+        for(let i = 0 ; i < selectedValues.length ; i++)
+        {
+            params += selectedValues[i];
+
+            if(i < selectedValues.length - 1)
+            {
+                params += "+";
+            }
+        }
+    }
+});
+
+document.getElementById("valid_filter_cat").addEventListener("click", () =>
+{
+    if(params !== "")
+    {
+        window.location.href = "/articles?cats=" + params;
+    }
+
     else
     {
         window.location.href = "{{ url('articles') }}";

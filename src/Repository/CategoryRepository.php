@@ -40,4 +40,22 @@ class CategoryRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByNames(Array $names) : Array
+    {
+        $res = [];
+
+        foreach($names as $name)
+        {
+            array_push($res,
+                $this->createQueryBuilder('c')
+                ->where("c.name = :name")
+                ->setParameter("name", $name)
+                ->getQuery()
+                ->getOneOrNullResult()
+            );
+        }
+        
+        return $res;
+    }
 }
