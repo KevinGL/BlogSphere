@@ -26,7 +26,7 @@ class ArticleType extends AbstractType
                     'expanded' => false,
                     'by_reference' => false
                 ])
-            ->add("save", SubmitType::class)
+            ->add("Sauvegarder", SubmitType::class)
         ;
     }
 

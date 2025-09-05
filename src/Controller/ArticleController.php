@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Comment;
+use App\Entity\Like;
 use App\Form\ArticleType;
 use App\Form\CommentType;
+use App\Form\LikeType;
 use App\Repository\ArticleRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\LikeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -78,15 +81,41 @@ final class ArticleController extends AbstractController
     }
 
     #[Route('/articles/view/{id}', name: 'article_view')]
-    public function view(ArticleRepository $repo, Request $req, EntityManagerInterface $em, int $id): Response
+    public function view(ArticleRepository $repo, LikeRepository $likeRepo, Request $req, EntityManagerInterface $em, int $id): Response
     {
         $article = $repo->find($id);
 
         $comment = new Comment();
-        $form = $this->createForm(CommentType::class, $comment);
-        $form->handleRequest($req);
 
-        if($form->isSubmitted() && $form->isValid())
+        $formComment = $this->createForm(CommentType::class, $comment);
+        $formComment->handleRequest($req);
+
+        $like = $likeRepo->findByUserArticle($this->getUser(), $article);
+        if(!$like)
+        {
+            $like = new Like();
+        }
+
+        $formLike = $this->createForm(LikeType::class, $like);
+        $formLike->handleRequest($req);
+
+        $nbLikes = 0;
+        $nbDislikes = 0;
+        foreach($article->getLikes() as $l)
+        {
+            if($l->getValue() == 1)
+            {
+                $nbLikes++;
+            }
+
+            else
+            if($l->getValue() == -1)
+            {
+                $nbDislikes++;
+            }
+        }
+
+        if($formComment->isSubmitted() && $formComment->isValid())
         {
             $comment->setCreatedAt(new \DateTime());
             $comment->setAuthor($this->getUser());
@@ -97,11 +126,35 @@ final class ArticleController extends AbstractController
 
             return $this->redirectToRoute("article_view", ["id" => $id]);
         }
+
+        if($formLike->isSubmitted() && $formLike->isValid())
+        {
+            $like->setAuthor($this->getUser());
+            $like->setArticle($article);
+
+            if($formLike->get('like')->isClicked())
+            {
+                $like->setValue(1);
+            }
+            else
+            if($formLike->get('dislike')->isClicked())
+            {
+                $like->setValue(-1);
+            }
+
+            $em->persist($like);
+            $em->flush();
+
+            return $this->redirectToRoute("article_view", ["id" => $id]);
+        }
         
         return $this->render('article/view.html.twig',
         [
             'article' => $article,
-            "form" => $form
+            "formComment" => $formComment,
+            "formLike" => $formLike,
+            "nbLikes" => $nbLikes,
+            "nbDislikes" => $nbDislikes
         ]);
     }
 

@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Article;
 use App\Entity\Category;
 use App\Entity\Comment;
+use App\Entity\Like;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -113,6 +114,21 @@ class AppFixtures extends Fixture
             $comment->setCreatedAt($this->faker->dateTimeBetween("-1 month", "now"));
 
             $manager->persist($comment);
+        }
+
+        ////////////////////////////////////////////////////////////////
+
+        for($i = 0 ; $i < 400 ; $i++)
+        {
+            $like = new Like();
+
+            $value = rand() % 2 == 0 ? 1 : -1;
+
+            $like->setArticle($articles[rand() % count($articles)]);
+            $like->setAuthor($users[rand() % count($users)]);
+            $like->setValue($value);
+
+            $manager->persist($like);
         }
 
         $manager->flush();

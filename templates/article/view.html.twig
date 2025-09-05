@@ -20,13 +20,27 @@
         {% endfor %}
     </div>
     <div>
-        {% for comment in article.comments %}
-            <p>{{ comment.content }}</p>
-            <div>(Publié le {{ comment.createdAt | date("d:m:Y") }} à {{ comment.createdAt | date("h:i") }} par {{ comment.author.username }})</div>
-        {% endfor %}
+        <img src="/images/like.png" alt="like" width="25">
+        <span>{{ nbLikes }}</span>
+        <img src="/images/dislike.png" alt="dislike" width="25">
+        <span>{{ nbDislikes }}</span>
+        {{ form_start(formLike) }}
+        {{ form_row(formLike.like) }}
+        {{ form_row(formLike.dislike) }}
+        {{ form_end(formLike) }}
+    </div>
+    <div>
+        <h4>Commentaires</h4>
+        <div>
+            {% for comment in article.comments %}
+                <p>{{ comment.content }}</p>
+                <div>(Publié le {{ comment.createdAt | date("d:m:Y") }} à {{ comment.createdAt | date("h:i") }} par {{ comment.author.username }})</div>
+                <hr>
+            {% endfor %}
+        </div>
     </div>
 
-    {{ form(form) }}
+    {{ form(formComment) }}
 </div>
 
 {% endblock %}
