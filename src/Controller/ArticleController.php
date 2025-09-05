@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Form\ArticleType;
+use App\Form\CommentType;
 use App\Repository\ArticleRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\UserRepository;
@@ -76,13 +78,30 @@ final class ArticleController extends AbstractController
     }
 
     #[Route('/articles/view/{id}', name: 'article_view')]
-    public function view(ArticleRepository $repo, int $id): Response
+    public function view(ArticleRepository $repo, Request $req, EntityManagerInterface $em, int $id): Response
     {
         $article = $repo->find($id);
+
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($req);
+
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $comment->setCreatedAt(new \DateTime());
+            $comment->setAuthor($this->getUser());
+            $comment->setArticle($article);
+
+            $em->persist($comment);
+            $em->flush();
+
+            return $this->redirectToRoute("article_view", ["id" => $id]);
+        }
         
         return $this->render('article/view.html.twig',
         [
-            'article' => $article
+            'article' => $article,
+            "form" => $form
         ]);
     }
 

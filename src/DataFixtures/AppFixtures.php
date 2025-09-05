@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Article;
 use App\Entity\Category;
+use App\Entity\Comment;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -74,6 +75,8 @@ class AppFixtures extends Fixture
 
         ////////////////////////////////////////////////////////////////
 
+        $articles = [];
+
         for($i = 0 ; $i < 50 ; $i++)
         {
             $article = new Article();
@@ -92,8 +95,24 @@ class AppFixtures extends Fixture
                 $cat = $categories[rand() % count($categories)];
                 $article->addCategory($cat);
             }
+
+            array_push($articles, $article);
             
             $manager->persist($article);
+        }
+
+        ////////////////////////////////////////////////////////////////
+
+        for($i = 0 ; $i < 200 ; $i++)
+        {
+            $comment = new Comment();
+
+            $comment->setArticle($articles[rand() % count($articles)]);
+            $comment->setAuthor($users[rand() % count($users)]);
+            $comment->setContent($this->faker->paragraph());
+            $comment->setCreatedAt($this->faker->dateTimeBetween("-1 month", "now"));
+
+            $manager->persist($comment);
         }
 
         $manager->flush();
