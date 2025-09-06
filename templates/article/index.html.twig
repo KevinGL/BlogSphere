@@ -28,7 +28,7 @@
             <a href="{{ url('article_edit', {'id': article.id}) }}">Modifier</a>
             <button class="delete" id="{{article.id}}">Supprimer</button>
         {% endif %}
-        <div>Publié le {{ article.publishedAt | date("d F Y à H:i") }} par {{ article.user.username }}</div>
+        <div>Publié le {{ article.publishedAt | date("d/m/Y à H:i") }} par {{ article.user.username }}</div>
     {% endfor %}
 </div>
 

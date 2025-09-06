@@ -104,7 +104,7 @@ class AppFixtures extends Fixture
 
         ////////////////////////////////////////////////////////////////
 
-        for($i = 0 ; $i < 200 ; $i++)
+        /*for($i = 0 ; $i < 200 ; $i++)
         {
             $comment = new Comment();
 
@@ -114,6 +114,23 @@ class AppFixtures extends Fixture
             $comment->setCreatedAt($this->faker->dateTimeBetween("-1 month", "now"));
 
             $manager->persist($comment);
+        }*/
+
+        foreach($users as $user)
+        {
+            $nbComments = rand() % 5;
+
+            for($i = 0 ; $i < $nbComments ; $i++)
+            {
+                $comment = new Comment();
+
+                $comment->setArticle($articles[rand() % count($articles)]);
+                $comment->setAuthor($user);
+                $comment->setContent($this->faker->paragraph());
+                $comment->setCreatedAt($this->faker->dateTimeBetween("-1 month", "now"));
+
+                $manager->persist($comment);
+            }
         }
 
         ////////////////////////////////////////////////////////////////

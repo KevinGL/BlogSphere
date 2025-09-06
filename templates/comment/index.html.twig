@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des articles{% endblock %}
+
+{% block body %}
+
+<select id="groupby">
+    <option value="">Lister par</option>
+    <option value="article">Article</option>
+    <option value="author">Auteur</option>
+</select>
+
+<div>
+    Filtrer par auteur
+    <input type="text" id="filter_users" list="users" placeholder="Rechercher un utilisateur..." class="border p-2 rounded w-full" />
+
+    <datalist id="users">
+        {% for user in users %}
+            <option value="{{ user.username }}"></option>
+        {% endfor %}
+    </datalist>
+</div>
+
+{#<select id="filter_users">
+    <option value="default">Filtrer par utilisateur</option>
+    <option value="">Tous</option>
+    {% for user in users %}
+        <option value="{{ user.username }}">{{ user.username }}</option>
+    {% endfor %}
+</select>
+
+<select id="filter_cat", multiple="multiple">
+    {% for cat in allCats %}
+        <option value="{{ cat.name }}">{{ cat.name }}</option>
+    {% endfor %}
+</select>
+
+<button id="valid_filter_cat">Valider</button>#}
+
+<div>
+    {% for comment in comments %}
+        <div>Article associé :
+            <p>
+                {% if comment.article.content | length > 40 %}
+                    {{ comment.article.content | slice(0, 40) }}...
+                {% else %}
+                    {{ comment.article.content }}
+                {% endif %}
+            </p>
+            <div>Publié le {{ comment.article.publishedAt | date("d/m/Y à H:i") }} par {{ comment.article.user.username }}</div>
+        </div>
+
+        <p>{{ comment.content }}</p>
+        <div>Publié le {{ comment.createdAt | date("d/m/Y à H:i") }} par {{ comment.author.username }}</div>
+        <button class="delete" id="{{comment.id}}">Supprimer</button>
+        <hr>
+    {% endfor %}
+</div>
+
+<script>
+
+const users =
+[
+    {% for user in users %}
+        "{{ user.username }}",
+    {% endfor %}
+];
+
+document.getElementById("groupby").addEventListener("change", (e) =>
+{
+    window.location.href = "/comments?groupby=" + e.target.value;
+});
+
+document.getElementById("filter_users").addEventListener("input", (e) =>
+{
+    users.map((user) =>
+    {
+        if(user === e.target.value)
+        {
+            window.location.href = "/comments?user=" + e.target.value;
+        }
+    });
+});
+
+</script>
+
+{% endblock %}

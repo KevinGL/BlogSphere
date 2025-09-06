@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Comment;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use PhpParser\Node\Expr\Cast\Array_;
 
 /**
  * @extends ServiceEntityRepository<Comment>
@@ -40,4 +42,21 @@ class CommentRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByList(string $list): array
+    {
+        return $this->createQueryBuilder("c")
+            ->groupBy("c." . $list)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByAuthor(User $author): array
+    {
+        return $this->createQueryBuilder("c")
+            ->where("c.author = :author")
+            ->setParameter("author", $author)
+            ->getQuery()
+            ->getResult();
+    }
 }
