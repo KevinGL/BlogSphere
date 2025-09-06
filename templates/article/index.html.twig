@@ -13,7 +13,7 @@
 </select>
 
 <select id="filter_cat", multiple="multiple">
-    {% for cat in cats %}
+    {% for cat in allCats %}
         <option value="{{ cat.name }}">{{ cat.name }}</option>
     {% endfor %}
 </select>
@@ -84,11 +84,18 @@ selectUsers.addEventListener("change", (e) =>
 
 ///////////////////////////////////////////
 
-let params = "";
+let selectedValues = [];
 
 document.getElementById("filter_cat").addEventListener("change", (e) =>
 {
-    const selectedValues = Array.from(e.target.selectedOptions).map(option => option.value);
+    selectedValues = Array.from(e.target.selectedOptions).map(option => option.value);
+});
+
+document.getElementById("valid_filter_cat").addEventListener("click", () =>
+{
+    //console.log(selectedValues);
+
+    let params = "";
 
     if(selectedValues.length !== 0)
     {
@@ -102,10 +109,9 @@ document.getElementById("filter_cat").addEventListener("change", (e) =>
             }
         }
     }
-});
-
-document.getElementById("valid_filter_cat").addEventListener("click", () =>
-{
+    
+    //console.log(params);
+    
     if(params !== "")
     {
         window.location.href = "/articles?cats=" + params;

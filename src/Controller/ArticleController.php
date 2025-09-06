@@ -37,31 +37,31 @@ final class ArticleController extends AbstractController
         if(!$req->query->get("user") && !$req->query->get("cats"))
         {
             $articles = $repo->findPagination($page);
-            $nbPages = ceil(count($repo->findAll()) / 10);
+            $nbPages = $repo->getNbPagesAll();
         }
         else
         if($req->query->get("user") && !$req->query->get("cats"))
         {
             $articles = $repo->findByUser($userRepo->findBy(["username" => $req->query->get("user") ])[0], $page);
-            $nbPages = ceil(count($articles) / 10);
+            $nbPages = $repo->getNbPagesByUser($this->getUser());
         }
         else
         if(!$req->query->get("user") && $req->query->get("cats"))
         {
-            $articles = $repo->findByCats($catRepo->findByNames(explode(" ", $req->query->get("cats"))), $page);
-            $nbPages = ceil(count($articles) / 10);
+            $cats = explode(" ", $req->query->get("cats"));
+
+            $articles = $repo->findByCats($catRepo->findByNames($cats), $page);
+            $nbPages = $repo->getNbPagesByCats($catRepo->findByNames($cats));
         }
 
         $users = $userRepo->findAll();
-        $cats = $catRepo->findAll();
-
-        //dd($nbPages);
+        $allCats = $catRepo->findAll();
         
         return $this->render('article/index.html.twig',
         [
             'articles' => $articles,
             'users' => $users,
-            'cats' => $cats,
+            'allCats' => $allCats,
             'nbPages' => $nbPages
         ]);
     }
