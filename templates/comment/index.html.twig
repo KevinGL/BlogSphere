@@ -102,8 +102,6 @@ pages.map((p) =>
             url += "&page=";
         }
 
-        //console.log(window.location.search, window.location.search.indexOf("page="));
-
         if(window.location.search.indexOf("page=") === -1)
         {
             url += numPage;
@@ -112,8 +110,6 @@ pages.map((p) =>
         {
             url = window.location.search.substring(0, window.location.search.indexOf("page=") + 5) + numPage;
         }
-
-        //console.log(url);
 
         window.location.href = url;
     });

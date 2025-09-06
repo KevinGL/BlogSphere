@@ -4,19 +4,27 @@
 
 {% block body %}
 
-<select id="filter_users">
-    <option value="default">Filtrer par utilisateur</option>
-    <option value="">Tous</option>
-    {% for user in users %}
-        <option value="{{ user.username }}">{{ user.username }}</option>
-    {% endfor %}
-</select>
+<div>
+    Filtrer par auteur
+    <input type="text" id="filter_users" list="users" placeholder="Rechercher un utilisateur..." class="border p-2 rounded w-full" />
 
-<select id="filter_cat", multiple="multiple">
-    {% for cat in allCats %}
-        <option value="{{ cat.name }}">{{ cat.name }}</option>
-    {% endfor %}
-</select>
+    <datalist id="users">
+        {% for user in users %}
+            <option value="{{ user.username }}"></option>
+        {% endfor %}
+    </datalist>
+
+    <button id="reset">Réinitaliser</button>
+</div>
+
+<div>
+    Filtrage par catégorie
+    <select id="filter_cat", multiple="multiple">
+        {% for cat in allCats %}
+            <option value="{{ cat.name }}">{{ cat.name }}</option>
+        {% endfor %}
+    </select>
+</div>
 
 <button id="valid_filter_cat">Valider</button>
 
@@ -68,18 +76,22 @@ document.getElementById("delete_no").addEventListener("click", () =>
 
 ///////////////////////////////////////////
 
-const selectUsers = document.getElementById("filter_users");
+const users =
+[
+    {% for user in users %}
+        "{{ user.username }}",
+    {% endfor %}
+]
 
-selectUsers.addEventListener("change", (e) =>
+document.getElementById("filter_users").addEventListener("input", (e) =>
 {
-    if(e.target.value != "")
+    users.map((user) =>
     {
-        window.location.href = "/articles?user=" + e.target.value;
-    }
-    else
-    {
-        window.location.href = "{{ url('articles') }}";
-    }
+        if(user === e.target.value)
+        {
+            window.location.href = "/articles?user=" + e.target.value;
+        }
+    });
 });
 
 ///////////////////////////////////////////
@@ -89,6 +101,11 @@ let selectedValues = [];
 document.getElementById("filter_cat").addEventListener("change", (e) =>
 {
     selectedValues = Array.from(e.target.selectedOptions).map(option => option.value);
+});
+
+document.getElementById("reset").addEventListener("click", () =>
+{
+    window.location.href = "{{ url('articles') }}";
 });
 
 document.getElementById("valid_filter_cat").addEventListener("click", () =>
@@ -133,20 +150,24 @@ Array.from(pages).map((page) =>
     {
         const numPage = page.id.split("_")[1];
 
-        let url = window.location.pathname;
+        let url = window.location.pathname + window.location.search;
 
         if(window.location.search === "")
         {
-            url += "?";
+            url += "?page=";
+        }
+        else
+        {
+            url += "&page=";
         }
 
         if(window.location.search.indexOf("page=") === -1)
         {
-            url += window.location.search + "&page=" + numPage;
+            url += numPage;
         }
         else
         {
-            url += window.location.search.substring(0, window.location.search.indexOf("page=") + 5) + numPage;
+            url = window.location.search.substring(0, window.location.search.indexOf("page=") + 5) + numPage;
         }
 
         window.location.href = url;

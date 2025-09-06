@@ -26,10 +26,23 @@ final class ArticleController extends AbstractController
     public function index(Request $req, ArticleRepository $repo, UserRepository $userRepo, CategoryRepository $catRepo): Response
     {
         $articles = [];
-        $page = 1;
-        $nbPages = 1;
+        
+        $filters = [];
+        $page = $req->query->get("page") ?? "1";
 
-        if($req->query->get("page"))
+        if($req->query->get("user") && !$req->query->get("cats"))
+        {
+            $filters = ["user", $userRepo->findByName($req->query->get("user"))];
+        }
+        else
+        if(!$req->query->get("user") && $req->query->get("cats"))
+        {
+            $filters = ["cats", $catRepo->findByNames(explode(" ", $req->query->get("cats")))];
+        }
+
+        $articles = $repo->findByFiltersPage($filters, $page);
+
+        /*if($req->query->get("page"))
         {
             $page = $req->query->get("page");
         }
@@ -52,17 +65,17 @@ final class ArticleController extends AbstractController
 
             $articles = $repo->findByCats($catRepo->findByNames($cats), $page);
             $nbPages = $repo->getNbPagesByCats($catRepo->findByNames($cats));
-        }
+        }*/
 
         $users = $userRepo->findAll();
         $allCats = $catRepo->findAll();
         
         return $this->render('article/index.html.twig',
         [
-            'articles' => $articles,
+            'articles' => $articles["results"],
             'users' => $users,
             'allCats' => $allCats,
-            'nbPages' => $nbPages
+            'nbPages' => $articles["nbPages"]
         ]);
     }
 

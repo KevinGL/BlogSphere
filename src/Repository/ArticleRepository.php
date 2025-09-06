@@ -117,4 +117,43 @@ class ArticleRepository extends ServiceEntityRepository
         ->getQuery()
         ->getResult();
     }
+
+    public function findByFiltersPage(array $filter = [], $page = 1): array
+    {
+        $limit = 10;
+
+        $qb = $this->createQueryBuilder('a');
+
+        if($filter != [])
+        {
+            if($filter[0] == "user")
+            {
+                $qb->where("a.user = :value")
+                ->setParameter("value", $filter[1]);
+            }
+
+            else
+            if($filter[0] == "cats")
+            {
+                $qb->innerJoin('a.categories', 'c')
+                    ->andWhere('c.id IN (:cats)')
+                    ->setParameter('cats', $filter[1]);
+            }
+        }
+
+        $qb2 = clone $qb;
+
+        $qb2->select('a.id');
+        $totalResults = count($qb2->getQuery()->getResult());
+
+        $qb->setFirstResult(($page - 1) * $limit);
+        $qb->setMaxResults($limit);
+
+        $results = $qb->getQuery()->getResult();
+
+        return [
+            "results" => $results,
+            "nbPages" => ceil($totalResults / $limit)
+        ];
+    }
 }
