@@ -42,80 +42,17 @@ class ArticleRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function getNbPagesAll(): int
+    public function findByUser(User $user, string $page): array
     {
-        $nbByPages = 10;
+        $limit = 10;
 
-        $result = $this->createQueryBuilder("a")
-            ->getQuery()
-            ->getResult();
-        
-        return ceil(count($result) / $nbByPages);
-    }
-
-    public function findPagination(int $page): Array
-    {
-        $nbByPages = 10;
-        
-        return $this->createQueryBuilder("a")
-            ->setFirstResult($nbByPages * ($page - 1))
-            ->setMaxResults($nbByPages)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function getNbPagesByUser(User $user): int
-    {
-        $nbByPages = 10;
-
-        $result = $this->createQueryBuilder("a")
-            ->where("a.user = :user")
-            ->setParameter(":user", $user)
-            ->getQuery()
-            ->getResult();
-        
-        return ceil(count($result) / $nbByPages);
-    }
-
-    public function findByUser(User $user, int $page): Array
-    {
-        $nbByPages = 10;
-        
         return $this->createQueryBuilder("a")
             ->where("a.user = :user")
-            ->setParameter(":user", $user)
-            ->setFirstResult($nbByPages * ($page - 1))
-            ->setMaxResults($nbByPages)
+            ->setParameter("user", $user)
+            ->setFirstResult($limit * ($page - 1))
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
-    }
-
-    public function getNbPagesByCats(Array $cats): int
-    {
-        $nbByPages = 10;
-
-        $result = $this->createQueryBuilder('a')
-            ->innerJoin('a.categories', 'c')
-            ->andWhere('c.id IN (:cats)')
-            ->setParameter('cats', $cats)
-            ->getQuery()
-            ->getResult();
-        
-        return ceil(count($result) / $nbByPages);
-    }
-
-    public function findByCats(Array $cats, int $page): Array
-    {
-        $nbByPages = 10;
-        
-        return $this->createQueryBuilder('a')
-        ->innerJoin('a.categories', 'c')
-        ->andWhere('c.id IN (:cats)')
-        ->setParameter('cats', $cats)
-        ->setFirstResult($nbByPages * ($page - 1))
-        ->setMaxResults($nbByPages)
-        ->getQuery()
-        ->getResult();
     }
 
     public function findByFiltersPage(array $filter = [], $page = 1): array

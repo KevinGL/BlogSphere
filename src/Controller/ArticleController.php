@@ -42,31 +42,6 @@ final class ArticleController extends AbstractController
 
         $articles = $repo->findByFiltersPage($filters, $page);
 
-        /*if($req->query->get("page"))
-        {
-            $page = $req->query->get("page");
-        }
-
-        if(!$req->query->get("user") && !$req->query->get("cats"))
-        {
-            $articles = $repo->findPagination($page);
-            $nbPages = $repo->getNbPagesAll();
-        }
-        else
-        if($req->query->get("user") && !$req->query->get("cats"))
-        {
-            $articles = $repo->findByUser($userRepo->findBy(["username" => $req->query->get("user") ])[0], $page);
-            $nbPages = $repo->getNbPagesByUser($this->getUser());
-        }
-        else
-        if(!$req->query->get("user") && $req->query->get("cats"))
-        {
-            $cats = explode(" ", $req->query->get("cats"));
-
-            $articles = $repo->findByCats($catRepo->findByNames($cats), $page);
-            $nbPages = $repo->getNbPagesByCats($catRepo->findByNames($cats));
-        }*/
-
         $users = $userRepo->findAll();
         $allCats = $catRepo->findAll();
         

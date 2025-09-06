@@ -31,6 +31,7 @@
 <div>
     {% for article in articles %}
         <h3>{{ article.title }}</h3>
+        <img src="{{ article.image }}" alt="{{ article.image }}" width="100">
         <a href="{{ url('article_view', {'id': article.id}) }}">Voir</a>
         {% if app.user and (article.user == app.user or "ROLE_ADMIN" in app.user.roles) %}
             <a href="{{ url('article_edit', {'id': article.id}) }}">Modifier</a>

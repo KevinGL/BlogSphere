@@ -7,12 +7,15 @@
 <div>
     {% for article in articles %}
         <h3>{{ article.title }}</h3>
+        <img src="{{ article.image }}" alt="{{ article.image }}" width="100">
         <a href="{{ url('article_view', {'id': article.id}) }}">Voir</a>
         <a href="{{ url('article_edit', {'id': article.id}) }}">Modifier</a>
         <button class="delete" id="{{article.id}}">Supprimer</button>
         <div>Publié le {{ article.publishedAt | date("d F Y à H:i") }}</div>
     {% endfor %}
 </div>
+
+<a href="{{ url('articles') }}">Revenir à la liste des articles</a>
 
 <div id="modal" hidden>
     Voulez-vous supprimer cet article ?

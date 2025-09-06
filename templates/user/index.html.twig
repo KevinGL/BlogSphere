@@ -1,20 +1,76 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserController!{% endblock %}
+{% block title %}Liste des articles{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>D:/Datas/Web/BlogSphere/src/Controller/UserController.php</code></li>
-        <li>Your template at <code>D:/Datas/Web/BlogSphere/templates/user/index.html.twig</code></li>
-    </ul>
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>username</th>
+                <th>admin ?</th>
+                <th>Articles publiés</th>
+                <th>Commentaires publiés</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <th>{{ user.id }}</th>
+                    <td>{{ user.username }}</td>
+                    <td>
+                        {% if "ROLE_ADMIN" in user.roles %}
+                            Oui
+                        {% else %}
+                            Non
+                        {% endif %}
+                    </td>
+                    <td>{{ user.articles | length }}</td>
+                    <td>{{ user.comments | length }}</td>
+                    <td><button id="{{ user.id }}" class="delete">Supprimer</button></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
+
+{#{% for i in 1..nbPages %}
+    <button id="page_{{i}}" class="page">{{ i }}</button>
+{% endfor %}#}
+
+<div id="modal" hidden>
+    Êtes-vous sûr de vouloir supprimer cet utilisateur ?
+    <button id="delete_yes">Oui</button>
+    <button id="delete_no">Non</button>
+</div>
+
+<script>
+
+const deletes = Array.from(document.getElementsByClassName("delete"));
+const modal = document.getElementById("modal");
+let idDelete;
+
+deletes.map((d) =>
+{
+    d.addEventListener("click", () =>
+    {
+        idDelete = d.id;
+        modal.hidden = false;
+    });
+});
+
+document.getElementById("delete_yes").addEventListener("click", () =>
+{
+    window.location.href = "/users/delete/" + idDelete;
+});
+
+document.getElementById("delete_no").addEventListener("click", () =>
+{
+    modal.hidden = true;
+});
+
+</script>
+
 {% endblock %}
