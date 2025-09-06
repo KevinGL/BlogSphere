@@ -26,30 +26,43 @@ final class ArticleController extends AbstractController
     public function index(Request $req, ArticleRepository $repo, UserRepository $userRepo, CategoryRepository $catRepo): Response
     {
         $articles = [];
+        $page = 1;
+        $nbPages = 1;
+
+        if($req->query->get("page"))
+        {
+            $page = $req->query->get("page");
+        }
 
         if(!$req->query->get("user") && !$req->query->get("cats"))
         {
-            $articles = $repo->findAll();
+            $articles = $repo->findPagination($page);
+            $nbPages = ceil(count($repo->findAll()) / 10);
         }
         else
         if($req->query->get("user") && !$req->query->get("cats"))
         {
-            $articles = $repo->findByUser($userRepo->findBy(["username" => $req->query->get("user") ])[0]);
+            $articles = $repo->findByUser($userRepo->findBy(["username" => $req->query->get("user") ])[0], $page);
+            $nbPages = ceil(count($articles) / 10);
         }
         else
         if(!$req->query->get("user") && $req->query->get("cats"))
         {
-            $articles = $repo->findByCats($catRepo->findByNames(explode(" ", $req->query->get("cats"))));
+            $articles = $repo->findByCats($catRepo->findByNames(explode(" ", $req->query->get("cats"))), $page);
+            $nbPages = ceil(count($articles) / 10);
         }
 
         $users = $userRepo->findAll();
         $cats = $catRepo->findAll();
+
+        //dd($nbPages);
         
         return $this->render('article/index.html.twig',
         [
             'articles' => $articles,
             'users' => $users,
-            'cats' => $cats
+            'cats' => $cats,
+            'nbPages' => $nbPages
         ]);
     }
 
@@ -198,9 +211,16 @@ final class ArticleController extends AbstractController
     }
 
     #[Route("/my_articles", name:"my_articles")]
-    public function myArticles(ArticleRepository $repo): Response
+    public function myArticles(Request $req, ArticleRepository $repo): Response
     {
-        $articles = $repo->findByUser($this->getUser());
+        $page = 1;
+
+        if($req->query->get("page"))
+        {
+            $page = $req->query->get("page");
+        }
+        
+        $articles = $repo->findByUser($this->getUser(), $page);
 
         return $this->render("article/my_articles.html.twig",
         [

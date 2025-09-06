@@ -42,20 +42,39 @@ class ArticleRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findByUser(User $user): Array
+    public function findPagination(int $page): Array
     {
+        $nbByPages = 10;
+        
         return $this->createQueryBuilder("a")
-            ->where("a.user = :user")
-            ->setParameter(":user", $user)
+            ->setFirstResult($nbByPages * ($page - 1))
+            ->setMaxResults($nbByPages)
             ->getQuery()
             ->getResult();
     }
 
-    public function findByCats(Array $cats): Array
+    public function findByUser(User $user, int $page): Array
     {
+        $nbByPages = 10;
+        
+        return $this->createQueryBuilder("a")
+            ->where("a.user = :user")
+            ->setParameter(":user", $user)
+            ->setFirstResult($nbByPages * ($page - 1))
+            ->setMaxResults($nbByPages)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByCats(Array $cats, int $page): Array
+    {
+        $nbByPages = 10;
+        
         return $this->createQueryBuilder('a')
         ->innerJoin('a.categories', 'c')
         ->andWhere('c.id IN (:cats)')
+        ->setFirstResult($nbByPages * ($page - 1))
+        ->setMaxResults($nbByPages)
         ->setParameter('cats', $cats)
         ->getQuery()
         ->getResult();

@@ -32,6 +32,10 @@
     {% endfor %}
 </div>
 
+{% for i in 1..nbPages %}
+    <button id="page_{{i}}" class="page">{{ i }}</button>
+{% endfor %}
+
 <div id="modal" hidden>
     Voulez-vous supprimer cet article ?
     <button id="delete_yes">Oui</button>
@@ -111,6 +115,36 @@ document.getElementById("valid_filter_cat").addEventListener("click", () =>
     {
         window.location.href = "{{ url('articles') }}";
     }
+});
+
+///////////////////////////////////////////
+
+let pages = document.getElementsByClassName("page");
+
+Array.from(pages).map((page) =>
+{
+    page.addEventListener("click", () =>
+    {
+        const numPage = page.id.split("_")[1];
+
+        let url = window.location.pathname;
+
+        if(window.location.search === "")
+        {
+            url += "?";
+        }
+
+        if(window.location.search.indexOf("page=") === -1)
+        {
+            url += window.location.search + "&page=" + numPage;
+        }
+        else
+        {
+            url += window.location.search.substring(0, window.location.search.indexOf("page=") + 5) + numPage;
+        }
+
+        window.location.href = url;
+    });
 });
 
 </script>
