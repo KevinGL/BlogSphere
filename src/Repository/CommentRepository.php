@@ -59,4 +59,40 @@ class CommentRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findByGroupsFiltersPage(string $groupBy = "", array $filter = [], $page = 1): array
+    {
+        $limit = 10;
+
+        $qb = $this->createQueryBuilder('c');
+
+        if($groupBy != "")
+        {
+            $qb->groupBy("c." . $groupBy);
+        }
+
+        if($filter != [])
+        {
+            if($filter[0] == "author")
+            {
+                $qb->where("c.author = :value")
+                ->setParameter("value", $filter[1]);
+            }
+        }
+
+        $qb2 = clone $qb;
+
+        $qb2->select('c.id');
+        $totalResults = count($qb2->getQuery()->getResult());
+
+        $qb->setFirstResult(($page - 1) * $limit);
+        $qb->setMaxResults($limit);
+
+        $results = $qb->getQuery()->getResult();
+
+        return [
+            "results" => $results,
+            "nbPages" => ceil($totalResults / $limit)
+        ];
+    }
 }

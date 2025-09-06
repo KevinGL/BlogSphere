@@ -19,23 +19,9 @@
             <option value="{{ user.username }}"></option>
         {% endfor %}
     </datalist>
+
+    <button id="reset">Réinitaliser</button>
 </div>
-
-{#<select id="filter_users">
-    <option value="default">Filtrer par utilisateur</option>
-    <option value="">Tous</option>
-    {% for user in users %}
-        <option value="{{ user.username }}">{{ user.username }}</option>
-    {% endfor %}
-</select>
-
-<select id="filter_cat", multiple="multiple">
-    {% for cat in allCats %}
-        <option value="{{ cat.name }}">{{ cat.name }}</option>
-    {% endfor %}
-</select>
-
-<button id="valid_filter_cat">Valider</button>#}
 
 <div>
     {% for comment in comments %}
@@ -55,6 +41,16 @@
         <button class="delete" id="{{comment.id}}">Supprimer</button>
         <hr>
     {% endfor %}
+</div>
+
+{% for i in 1..nbPages %}
+    <button id="page_{{i}}" class="page">{{ i }}</button>
+{% endfor %}
+
+<div id="modal" hidden>
+    Êtes-vous sûr de vouloir supprimer ce commentaire ?
+    <button id="delete_yes">Oui</button>
+    <button id="delete_no">Non</button>
 </div>
 
 <script>
@@ -80,6 +76,70 @@ document.getElementById("filter_users").addEventListener("input", (e) =>
             window.location.href = "/comments?user=" + e.target.value;
         }
     });
+});
+
+document.getElementById("reset").addEventListener("click", () =>
+{
+    window.location.href = "/comments";
+});
+
+const pages = Array.from(document.getElementsByClassName("page"));
+
+pages.map((p) =>
+{
+    p.addEventListener("click", () =>
+    {
+        const numPage = p.id.split("_")[1];
+
+        let url = window.location.pathname + window.location.search;
+
+        if(window.location.search === "")
+        {
+            url += "?page=";
+        }
+        else
+        {
+            url += "&page=";
+        }
+
+        //console.log(window.location.search, window.location.search.indexOf("page="));
+
+        if(window.location.search.indexOf("page=") === -1)
+        {
+            url += numPage;
+        }
+        else
+        {
+            url = window.location.search.substring(0, window.location.search.indexOf("page=") + 5) + numPage;
+        }
+
+        //console.log(url);
+
+        window.location.href = url;
+    });
+});
+
+const deletes = Array.from(document.getElementsByClassName("delete"));
+let idDelete = "";
+const modal = document.getElementById("modal");
+
+deletes.map((d) =>
+{
+    d.addEventListener("click", () =>
+    {
+        idDelete = d.id;
+        modal.hidden = false;
+    });
+});
+
+document.getElementById("delete_yes").addEventListener("click", () =>
+{
+    window.location.href = "/comments/delete/" + idDelete;
+});
+
+document.getElementById("delete_no").addEventListener("click", () =>
+{
+    modal.hidden = true;
 });
 
 </script>
