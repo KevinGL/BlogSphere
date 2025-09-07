@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+//use Cloudinary\Cloudinary;
+//use Cloudinary\Api\Upload\UploadApi;
+use App\Service\CloudinaryUploader;
 
 #[IsGranted("ROLE_USER")]
 final class ArticleController extends AbstractController
@@ -55,18 +58,27 @@ final class ArticleController extends AbstractController
     }
 
     #[Route("/articles/add", name: "articles_add")]
-    public function add(Request $req, EntityManagerInterface $em): Response
+    public function add(Request $req, EntityManagerInterface $em, CloudinaryUploader $cloudinary): Response
     {
         $article = new Article();
 
         $article->setStatus("published");
         $article->setPublishedAt(new \DateTime());
+        $article->setUser($this->getUser());
 
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($req);
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $file = $form->get('image')->getData();
+
+            if($file)
+            {
+                $result = $cloudinary->uploadFile($file->getPathname());
+                $article->setImage($result['secure_url']);
+            }
+            
             $em->persist($article);
             $em->flush();
 
@@ -160,7 +172,7 @@ final class ArticleController extends AbstractController
     }
 
     #[Route("/articles/edit/{id}", name: "article_edit")]
-    public function edit(Request $req, EntityManagerInterface $em, ArticleRepository $repo, int $id): Response
+    public function edit(Request $req, EntityManagerInterface $em, CloudinaryUploader $cloudinary, ArticleRepository $repo, int $id): Response
     {
         $article = $repo->find($id);
 
@@ -171,6 +183,14 @@ final class ArticleController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $file = $form->get('image')->getData();
+
+            if($file)
+            {
+                $result = $cloudinary->uploadFile($file->getPathname());
+                $article->setImage($result['secure_url']);
+            }
+            
             $em->persist($article);
             $em->flush();
 

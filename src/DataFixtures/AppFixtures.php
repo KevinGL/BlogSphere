@@ -84,7 +84,7 @@ class AppFixtures extends Fixture
 
             $article->setTitle($this->faker->title());
             $article->setContent(implode("\n", $this->faker->paragraphs(5)));
-            $article->setImage("https://picsum.photos/800/600?random=" . $i);
+            $article->setImage("https://picsum.photos/id/" . $i . "/800/600");
             $article->setStatus("published");
             $article->setPublishedAt($this->faker->dateTimeBetween("-1 month", "now"));
             $article->setUser($users[rand() % count($users)]);
