@@ -3,17 +3,32 @@
 {% block title %}Inscrivez-vous{% endblock %}
 
 {% block body %}
-    <h1>Inscrivez-vous</h1>
+<div class="min-h-screen flex items-center justify-center bg-purple-500 px-4">
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+    <h1 class="text-xl font-bold text-gray-800 mb-6 text-center">Créer un compte</h1>
 
     {{ form_errors(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Mot de passe'
-        }) }}
+    {{ form_start(registrationForm, { 'attr': { 'class': 'flex flex-col gap-4' } }) }}
+        <div>
+            {{ form_label(registrationForm.username, null, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700' } }) }}
+            {{ form_widget(registrationForm.username, { 'attr': { 'class': 'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2' } }) }}
+        </div>
+        <div>
+            {{ form_label(registrationForm.plainPassword, null, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700' } }) }}
+            {{ form_widget(registrationForm.plainPassword, { 'attr': { 'class': 'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2' } }) }}
+        </div>
         {{ form_row(registrationForm.agreeTerms) }}
 
-        <button type="submit" class="btn">S'inscrire</button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">S'inscrire</button>
+
+        <p class="mt-6 text-sm text-center text-gray-600">
+          Déjà un compte ?
+          <a href="{{ url('app_login') }}" class="text-blue-600 hover:underline">Se connecter</a>
+        </p>
+
     {{ form_end(registrationForm) }}
+
+  </div>
+</div>
 {% endblock %}

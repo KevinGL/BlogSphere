@@ -4,53 +4,102 @@
 
 {% block body %}
 
-<select id="groupby">
-    <option value="">Lister par</option>
-    <option value="article">Article</option>
-    <option value="author">Auteur</option>
-</select>
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Gestion des commentaires</h1>
 
-<div>
-    Filtrer par auteur
-    <input type="text" id="filter_users" list="users" placeholder="Rechercher un utilisateur..." class="border p-2 rounded w-full" />
-
-    <datalist id="users">
-        {% for user in users %}
-            <option value="{{ user.username }}"></option>
-        {% endfor %}
-    </datalist>
-
-    <button id="reset">Réinitaliser</button>
-</div>
-
-<div>
-    {% for comment in comments %}
-        <div>Article associé :
-            <p>
-                {% if comment.article.content | length > 40 %}
-                    {{ comment.article.content | slice(0, 40) }}...
-                {% else %}
-                    {{ comment.article.content }}
-                {% endif %}
-            </p>
-            <div>Publié le {{ comment.article.publishedAt | date("d/m/Y à H:i") }} par {{ comment.article.user.username }}</div>
+    <div class="bg-white shadow rounded-xl p-4 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div class="flex items-center gap-2">
+            <label for="groupby" class="text-gray-600 font-medium">Trier par :</label>
+            <select id="groupby" class="border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+                <option value="">Lister par</option>
+                <option value="article">Article</option>
+                <option value="author">Auteur</option>
+            </select>
         </div>
 
-        <p>{{ comment.content }}</p>
-        <div>Publié le {{ comment.createdAt | date("d/m/Y à H:i") }} par {{ comment.author.username }}</div>
-        <button class="delete" id="{{comment.id}}">Supprimer</button>
-        <hr>
-    {% endfor %}
+        <div class="flex items-center gap-2">
+            <input type="text" id="filter_users" list="users"
+                placeholder="Rechercher un utilisateur..."
+                class="border p-2 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 w-60" />
+
+            <datalist id="users">
+                {% for user in users %}
+                    <option value="{{ user.username }}"></option>
+                {% endfor %}
+            </datalist>
+
+            <button id="reset" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">
+                Réinitialiser
+            </button>
+        </div>
+    </div>
+
+    <div class="flex justify-center mt-6 space-x-2">
+        {% for i in 1..nbPages %}
+            <button id="page_{{i}}"
+                    class="page px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 {% if loop.index == currentPage %}bg-blue-500 text-white border-blue-500{% endif %}">
+                {{ i }}
+            </button>
+        {% endfor %}
+    </div>
+
+    <div class="space-y-6">
+        {% for comment in comments %}
+            <div class="bg-white shadow-md rounded-xl p-4">
+                <div class="text-sm text-gray-500 mb-2">
+                    Article associé :
+                    <span class="font-semibold text-gray-800">
+                        {% if comment.article.content | length > 40 %}
+                            {{ comment.article.content | slice(0, 40) }}...
+                        {% else %}
+                            {{ comment.article.content }}
+                        {% endif %}
+                    </span>
+                    <br>
+                    <span>Publié le {{ comment.article.publishedAt | date("d/m/Y à H:i") }} par
+                        <span class="font-medium">{{ comment.article.user.username }}</span>
+                    </span>
+                </div>
+
+                <p class="text-gray-700 mb-2">{{ comment.content }}</p>
+
+                <div class="text-sm text-gray-500 mb-4">
+                    Commentaire posté le {{ comment.createdAt | date("d/m/Y à H:i") }}
+                    par <span class="font-medium">{{ comment.author.username }}</span>
+                </div>
+
+                <button class="delete px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition"
+                        id="{{ comment.id }}">
+                    Supprimer
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="flex justify-center mt-6 space-x-2">
+        {% for i in 1..nbPages %}
+            <button id="page_{{i}}"
+                    class="page px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 {% if loop.index == currentPage %}bg-blue-500 text-white border-blue-500{% endif %}">
+                {{ i }}
+            </button>
+        {% endfor %}
+    </div>
 </div>
 
-{% for i in 1..nbPages %}
-    <button id="page_{{i}}" class="page">{{ i }}</button>
-{% endfor %}
-
-<div id="modal" hidden>
-    Êtes-vous sûr de vouloir supprimer ce commentaire ?
-    <button id="delete_yes">Oui</button>
-    <button id="delete_no">Non</button>
+<div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-96 text-center">
+        <p class="text-lg font-medium text-gray-800 mb-4">Êtes-vous sûr de vouloir supprimer ce commentaire ?</p>
+        <div class="flex justify-center gap-4">
+            <button id="delete_yes"
+                    class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                Oui
+            </button>
+            <button id="delete_no"
+                    class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">
+                Non
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -124,7 +173,9 @@ deletes.map((d) =>
     d.addEventListener("click", () =>
     {
         idDelete = d.id;
-        modal.hidden = false;
+        //modal.hidden = false;
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
     });
 });
 
@@ -135,7 +186,9 @@ document.getElementById("delete_yes").addEventListener("click", () =>
 
 document.getElementById("delete_no").addEventListener("click", () =>
 {
-    modal.hidden = true;
+    //modal.hidden = true;
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
 });
 
 </script>

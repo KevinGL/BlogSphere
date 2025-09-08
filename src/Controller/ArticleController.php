@@ -53,7 +53,8 @@ final class ArticleController extends AbstractController
             'articles' => $articles["results"],
             'users' => $users,
             'allCats' => $allCats,
-            'nbPages' => $articles["nbPages"]
+            'nbPages' => $articles["nbPages"],
+            "currentPage" => $page
         ]);
     }
 
@@ -206,7 +207,7 @@ final class ArticleController extends AbstractController
     }
 
     #[Route("/articles/delete/{id}", name: "article_delete")]
-    public function delete(EntityManagerInterface $em, ArticleRepository $repo, int $id): Response
+    public function delete(Request $req, EntityManagerInterface $em, ArticleRepository $repo, int $id): Response
     {
         $article = $repo->find($id);
 
@@ -215,7 +216,9 @@ final class ArticleController extends AbstractController
 
         $this->addFlash("success", "Article retiré avec succès");
 
-        return $this->redirectToRoute("articles");
+        $redirect = $req->query->get("prev_url") ?? "articles";
+
+        return $this->redirectToRoute($redirect);
     }
 
     #[Route("/my_articles", name:"my_articles")]

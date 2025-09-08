@@ -4,47 +4,81 @@
 
 {% block body %}
 
-<div>
-    {% for article in articles %}
-        <h3>{{ article.title }}</h3>
-        <img src="{{ article.image }}" alt="{{ article.image }}" width="100">
-        <a href="{{ url('article_view', {'id': article.id}) }}">Voir</a>
-        <a href="{{ url('article_edit', {'id': article.id}) }}">Modifier</a>
-        <button class="delete" id="{{article.id}}">Supprimer</button>
-        <div>Publié le {{ article.publishedAt | date("d F Y à H:i") }}</div>
-    {% endfor %}
+<div class="container mx-auto px-4 py-6">
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Vos articles</h1>
+
+    {% if articles | length > 0 %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for article in articles %}
+                <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col justify-between w-72 h-80">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 text-center">{{ article.title }}</h3>
+
+                    {% if article.image %}
+                        <img src="{{ article.image }}" alt="{{ article.title }}" class="w-full h-40 object-cover rounded-md mb-4">
+                    {% endif %}
+                    
+                    <div class="flex justify-center gap-3 mb-4">
+                        <a href="{{ url('article_view', {'id': article.id}) }}" class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition">Voir</a>
+                        <a href="{{ url('article_edit', {'id': article.id}) }}" class="px-3 py-1 text-sm bg-blue-400 text-white rounded hover:bg-blue-500 transition">Modifier</a>
+                        <button class="delete px-3 py-1 text-sm bg-purple-500 text-white rounded hover:bg-purple-600 transition" id="{{article.id}}">Supprimer</button>
+                    </div>
+
+                    <div class="text-sm text-gray-500 text-center">
+                        Publié le {{ article.publishedAt | date("d F Y à H:i") }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <p class="text-center text-gray-500 col-span-full">Vous n'avez encore publié aucun article.</p>
+    {% endif %}
+
+    <div class="flex justify-center mt-8">
+        <a href="{{ url('articles') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+            Revenir à la liste des articles
+        </a>
+    </div>
 </div>
 
-<a href="{{ url('articles') }}">Revenir à la liste des articles</a>
-
-<div id="modal" hidden>
-    Voulez-vous supprimer cet article ?
-    <button id="delete_yes">Oui</button>
-    <button id="delete_no">Non</button>
+<div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-96 text-center">
+        <h2 class="text-lg font-bold mb-4">Voulez-vous supprimer cet article ?</h2>
+        <div class="flex justify-center gap-4">
+            <button id="delete_yes" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Oui</button>
+            <button id="delete_no" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">Non</button>
+        </div>
+    </div>
 </div>
 
 <script>
 
 const buttons = document.getElementsByClassName("delete");
+const modal = document.getElementById("modal");
 let idDelete;
 
 Array.from(buttons).map((button) =>
 {
     button.addEventListener("click", () =>
     {
-        document.getElementById("modal").hidden = false;
+        //document.getElementById("modal").hidden = false;
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
         idDelete = button.id;
     });
 });
 
 document.getElementById("delete_yes").addEventListener("click", () =>
 {
-    window.location.href = "/articles/delete/" + idDelete;
+    window.location.href = "/articles/delete/" + idDelete + "?prev_url=my_articles";
 });
 
 document.getElementById("delete_no").addEventListener("click", () =>
 {
-    document.getElementById("modal").hidden = true;
+    //document.getElementById("modal").hidden = true;
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
 });
 
 </script>

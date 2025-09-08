@@ -1,49 +1,76 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des articles{% endblock %}
+{% block title %}Liste des utilisateurs{% endblock %}
 
 {% block body %}
 
-<div>
-    <table>
-        <thead>
-            <tr>
-                <th>id</th>
-                <th>username</th>
-                <th>admin ?</th>
-                <th>Articles publiés</th>
-                <th>Commentaires publiés</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Gestion des utilisateurs</h1>
+
+    <div class="overflow-x-auto bg-white rounded-xl shadow-md">
+        <table class="min-w-full text-left text-sm text-gray-600">
+            <thead class="bg-gray-100 text-gray-800 uppercase text-xs font-semibold">
                 <tr>
-                    <th>{{ user.id }}</th>
-                    <td>{{ user.username }}</td>
-                    <td>
-                        {% if "ROLE_ADMIN" in user.roles %}
-                            Oui
-                        {% else %}
-                            Non
-                        {% endif %}
-                    </td>
-                    <td>{{ user.articles | length }}</td>
-                    <td>{{ user.comments | length }}</td>
-                    <td><button id="{{ user.id }}" class="delete">Supprimer</button></td>
+                    <th class="px-6 py-3">ID</th>
+                    <th class="px-6 py-3">Nom d'utilisateur</th>
+                    <th class="px-6 py-3">Admin ?</th>
+                    <th class="px-6 py-3">Articles publiés</th>
+                    <th class="px-6 py-3">Commentaires publiés</th>
+                    <th class="px-6 py-3 text-center">Actions</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for user in users %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-medium text-gray-900">{{ user.id }}</td>
+                        <td class="px-6 py-4">{{ user.username }}</td>
+                        <td class="px-6 py-4">
+                            {% if "ROLE_ADMIN" in user.roles %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Oui</span>
+                            {% else %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Non</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">{{ user.articles | length }}</td>
+                        <td class="px-6 py-4">{{ user.comments | length }}</td>
+                        <td class="px-6 py-4 text-center space-x-2">
+                            {% if "ROLE_ADMIN" in user.roles %}
+                                <a href="{{ path('user_revoke_admin', {id: user.id}) }}"
+                                   class="px-3 py-1 bg-yellow-500 text-white rounded-lg shadow hover:bg-yellow-600 transition">
+                                    Retirer admin
+                                </a>
+                            {% else %}
+                                <a href="{{ path('user_promote_admin', {id: user.id}) }}"
+                                   class="px-3 py-1 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition">
+                                    Promouvoir admin
+                                </a>
+                            {% endif %}
+                            <button id="{{ user.id }}"
+                                class="delete px-3 py-1 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition">
+                                Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
-{#{% for i in 1..nbPages %}
-    <button id="page_{{i}}" class="page">{{ i }}</button>
-{% endfor %}#}
-
-<div id="modal" hidden>
-    Êtes-vous sûr de vouloir supprimer cet utilisateur ?
-    <button id="delete_yes">Oui</button>
-    <button id="delete_no">Non</button>
+<div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-96 text-center">
+        <p class="text-lg font-medium text-gray-800 mb-4">Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
+        <div class="flex justify-center gap-4">
+            <button id="delete_yes"
+                    class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                Oui
+            </button>
+            <button id="delete_no"
+                    class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">
+                Non
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -57,7 +84,9 @@ deletes.map((d) =>
     d.addEventListener("click", () =>
     {
         idDelete = d.id;
-        modal.hidden = false;
+        //modal.hidden = false;
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
     });
 });
 
@@ -68,7 +97,9 @@ document.getElementById("delete_yes").addEventListener("click", () =>
 
 document.getElementById("delete_no").addEventListener("click", () =>
 {
-    modal.hidden = true;
+    //modal.hidden = true;
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
 });
 
 </script>

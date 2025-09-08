@@ -3,7 +3,29 @@
 {% block title %}Ajouter une catégorie{% endblock %}
 
 {% block body %}
+<div class="w-full lg:w-2/3 mx-auto px-4 py-10">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+        {{ title|default('Ajouter une catégorie') }}
+    </h1>
 
-{{ form(form) }}
+    <div class="bg-white p-6 rounded-xl shadow-lg">
+        {{ form_start(form, {'attr': {'class': 'space-y-12'}}) }}
+            <div class="space-y-4">
+                {{ form_label(form.name, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.name, {'attr': {'class': 'w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2'}}) }}
+            </div>
+
+            <div class="space-y-4">
+                {{ form_label(form.articles, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.articles, {'attr': {'class': 'w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2','multiple': 'multiple'}}) }}
+            </div>
+
+            <div class="text-center">
+                {{ form_row(form.save, {"attr": {'class': 'px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200'}}) }}
+            </div>
+        
+        {{ form_end(form) }}
+    </div>
+</div>
 
 {% endblock %}

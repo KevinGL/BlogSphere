@@ -44,4 +44,42 @@ final class UserController extends AbstractController
 
         return $this->redirectToRoute("app_user");
     }
+
+    #[Route("/users/promote_admin/{id}", name: "user_promote_admin")]
+    public function promoteAdmin(entityManagerInterface $em, UserRepository $repo, int $id): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN'))
+        {
+            return $this->redirectToRoute('articles');
+        }
+
+        $user = $repo->find($id);
+        $user->setRoles(["ROLE_ADMIN"]);
+        
+        $em->persist($user);
+        $em->flush();
+
+        $this->addFlash("success", $user->getUsername() . " est désormais admin !");
+
+        return $this->redirectToRoute("app_user");
+    }
+
+    #[Route("/users/revoke_admin/{id}", name: "user_revoke_admin")]
+    public function revokeAdmin(entityManagerInterface $em, UserRepository $repo, int $id): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN'))
+        {
+            return $this->redirectToRoute('articles');
+        }
+
+        $user = $repo->find($id);
+        $user->setRoles(["ROLE_USER"]);
+        
+        $em->persist($user);
+        $em->flush();
+
+        $this->addFlash("success", $user->getUsername() . " n'est plus admin");
+
+        return $this->redirectToRoute("app_user");
+    }
 }

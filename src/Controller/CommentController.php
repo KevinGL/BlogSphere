@@ -32,7 +32,8 @@ final class CommentController extends AbstractController
         [
             'comments' => $comments["results"],
             "nbPages" => $comments["nbPages"],
-            "users" => $users
+            "users" => $users,
+            "currentPage" => $page
         ]);
     }
 

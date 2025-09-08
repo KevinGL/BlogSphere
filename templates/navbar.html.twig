@@ -1,0 +1,52 @@
+<nav class="bg-white shadow-md">
+  <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+
+      <div class="flex-shrink-0 flex items-center">
+        <a href="{{ url('home') }}" class="text-xl font-bold text-blue-600">BlogSphere</a>
+      </div>
+
+      <div class="hidden md:flex space-x-4 items-center">
+        <a href="{{ url('my_articles') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Voir vos articles</a>
+        <a href="{{ url('articles') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Voir tous les articles</a>
+        <a href="{{ url('articles_add') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Ajouter un article</a>
+        {% if "ROLE_ADMIN" in app.user.roles %}
+            <a href="{{ url('app_category') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Gérer les catégories</a>
+            <a href="{{ url('cat_add') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Ajouter une catégorie</a>
+            <a href="{{ url('app_comment') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Gérer les commentaires</a>
+            <a href="{{ url('app_user') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Gérer les utilisateurs</a>
+        {% endif %}
+        <a href="{{ url('app_logout') }}" class="text-red-600 hover:text-red-800 px-3 py-2 rounded-md text-sm font-medium">Déconnexion</a>
+      </div>
+
+      <div class="flex items-center md:hidden">
+        <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
+          <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="md:hidden hidden px-2 pt-2 pb-3 space-y-1 bg-white shadow-md">
+    <a href="{{ url('my_articles') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Voir vos articles</a>
+    <a href="{{ url('articles') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Voir tous les articles</a>
+    <a href="{{ url('articles_add') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Ajouter un article</a>
+    {% if "ROLE_ADMIN" in app.user.roles %}
+        <a href="{{ url('app_category') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Gérer les catégories</a>
+        <a href="{{ url('cat_add') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600m">Ajouter une catégorie</a>
+        <a href="{{ url('app_comment') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Gérer les commentaires</a>
+        <a href="{{ url('app_user') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600">Gérer les utilisateurs</a>
+    {% endif %}
+    <a href="{{ url('app_logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-800">Déconnexion</a>
+  </div>
+
+  <script>
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
+</nav>
