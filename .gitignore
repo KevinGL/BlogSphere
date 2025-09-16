@@ -25,3 +25,4 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 /src/DataFixtures/
+/blogsphere_articles_100.csv

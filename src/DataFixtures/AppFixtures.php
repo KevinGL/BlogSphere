@@ -62,7 +62,7 @@ class AppFixtures extends Fixture
 
         ////////////////////////////////////////////////////////////////
 
-        $categories = [];
+        /*$categories = [];
         
         for($i = 0 ; $i < 10 ; $i++)
         {
@@ -82,7 +82,7 @@ class AppFixtures extends Fixture
         {
             $article = new Article();
 
-            $article->setTitle($this->faker->title());
+            $article->setTitle($this->faker->sentence());
             $article->setContent(implode("\n", $this->faker->paragraphs(5)));
             $article->setImage("https://picsum.photos/id/" . $i . "/800/600");
             $article->setStatus("published");
@@ -104,18 +104,6 @@ class AppFixtures extends Fixture
 
         ////////////////////////////////////////////////////////////////
 
-        /*for($i = 0 ; $i < 200 ; $i++)
-        {
-            $comment = new Comment();
-
-            $comment->setArticle($articles[rand() % count($articles)]);
-            $comment->setAuthor($users[rand() % count($users)]);
-            $comment->setContent($this->faker->paragraph());
-            $comment->setCreatedAt($this->faker->dateTimeBetween("-1 month", "now"));
-
-            $manager->persist($comment);
-        }*/
-
         foreach($users as $user)
         {
             $nbComments = rand() % 5;
@@ -131,7 +119,96 @@ class AppFixtures extends Fixture
 
                 $manager->persist($comment);
             }
+        }*/
+
+        ////////////////////////////////////////////////////////////////
+
+        $articles = [];
+        $categories = [];
+        $comments = [];
+
+        $file = fopen("./blogsphere_articles_100.csv", "r");
+
+        $index = 0;
+
+        while(1)
+        {
+            $line = fgetcsv($file);
+            if(!$line)
+            {
+                break;
+            }
+
+            if($index > 0)
+            {
+                $article = new Article();
+
+                $article->setTitle($line[0]);
+                $article->setContent($line[1]);
+                $article->setImage("https://picsum.photos/id/" . 2 * $index . "/800/600");
+                $article->setStatus("published");
+                $article->setPublishedAt($this->faker->dateTimeBetween("-1 month", "now"));
+                $article->setUser($users[rand() % count($users)]);
+
+                $cats = explode(" | ", $line[2]);
+
+                foreach($cats as $cat)
+                {
+                    $existingCategory = null;
+
+                    foreach($categories as $c)
+                    {
+                        if ($c->getName() == $cat)
+                        {
+                            $existingCategory = $c;
+                            break;
+                        }
+                    }
+
+                    if ($existingCategory)
+                    {
+                        $article->addCategory($existingCategory);
+                    }
+                    else
+                    {
+                        $category = new Category();
+                        $category->setName($cat);
+                        $article->addCategory($category);
+
+                        $categories[] = $category;
+                        $manager->persist($category);
+                    }
+                }
+
+                ///////////////////
+
+                $coms = explode(" | ", $line[3]);
+
+                foreach($coms as $com)
+                {
+                    $comment = new Comment();
+                    $comment->setContent($com);
+                    $comment->setCreatedAt($this->faker->dateTimeBetween("-1 month", "now"));
+                    $comment->setAuthor($users[rand() % count($users)]);
+                    
+                    $article->addComment($comment);
+
+                    if(!in_array($comment, $comments))
+                    {
+                        array_push($comments, $comment);
+                        $manager->persist($comment);
+                    }
+                }
+
+                array_push($articles, $article);
+                
+                $manager->persist($article);
+            }
+
+            $index++;
         }
+
+        fclose($file);
 
         ////////////////////////////////////////////////////////////////
 
